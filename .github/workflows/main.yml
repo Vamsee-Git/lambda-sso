@@ -17,7 +17,7 @@ jobs:
 
       # Set up AWS credentials
       - name: Configure AWS credentials using OIDC
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::664418994073:role/OIDC-SSO
           aws-region: ap-south-1
