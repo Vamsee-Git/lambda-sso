@@ -46,3 +46,16 @@ resource "aws_lambda_permission" "apigw_lambda" {
 output "api_gateway_endpoint" {
   value = aws_apigatewayv2_api.this.api_endpoint
 }
+resource "aws_apigatewayv2_authorizer" "this" {
+  api_id = aws_apigatewayv2_api.this.id
+  name   = "CognitoAuthorizer"
+ 
+  identity_sources = ["$request.header.Authorization"]
+ 
+  authorizer_type = "JWT"
+ 
+  jwt_configuration {
+    audience = [var.client_id]
+    issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${var.user_pool_id}"
+  }
+}
