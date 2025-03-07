@@ -36,4 +36,16 @@ module "api_gateway" {
   lambda_function_name = module.lambda.lambda_function_name
   lambda_function_arn  = module.lambda.lambda_invoke_arn
 }
-
+module "cognito" {
+  source      = "./modules/cognito_user_pool"
+  pool_name   = "UserPool-sso"
+}
+ 
+# Cognito App Client
+module "cognito_user_pool_client" {
+  source      = "./modules/cognito_user_pool_client"
+  user_pool_id = module.cognito_user_pool.user_pool_id
+  client_name = "AppClient-sso"
+  #client_id     = module.cognito_user_pool_client.client_id
+# region        = "us-east-1"
+}
