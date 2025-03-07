@@ -1,0 +1,53 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "us-east-1"
+  TF_VERSION: "1.5.0"
+
+jobs:
+  terraform:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Install Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Initialize Terraform
+      - name: Terraform Init
+        run: |
+          cd infra
+          terraform init
+      # Validate Terraform configuration
+      - name: Terraform Validate
+        run: |
+          cd infra
+          terraform validate
+      # Run Terraform Plan (destroy)
+      - name: Terraform Plan (destroy)
+        run: |
+          cd infra
+          terraform plan -destroy -var-file="../env/dev/terraform.tfvars" -out=tfplan
+      # Run Terraform Destroy
+      - name: Terraform Destroy
+        run: |
+          cd infra
+          terraform apply -auto-approve tfplan
